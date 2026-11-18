@@ -38,11 +38,16 @@ Verified GPIO map (Realtek `PA` numbers; LibreTiny Arduino pin in parens):
 | LED red | **PA13** | bicolor common-anode, drive LOW to light |
 | LED green | **PA14** | bicolor common-anode, drive LOW to light |
 | UART log | PA15 (RX) / PA16 (TX) | 115200 8N1 |
-| Download strap | PA0 | pull to 3.3V + power-cycle to enter UART download mode |
+| Download strap | PA0 **and** PA13 | both tied to 3.3V + power-cycle (see Flashing) |
+
+On this board, entering UART download mode needed **both** exposed test pads —
+`gpioa_0` (PA0) and `gpioa_13` (PA13, on the back) — tied **straight to 3.3V**.
+Wiring them directly (no series resistor) worked fine.
 
 The relay/LEDs sit on pads LibreTiny leaves muxed to SDIO/SWD, so the firmware
 drives them through the **raw Realtek HAL** (`hal_gpio_*`) rather than
-`digitalWrite()`. See the comments in `firmware/src/main.cpp`.
+`digitalWrite()`. See the comments in `firmware/src/main.cpp`. The relay is fully
+drivable on 3.3V bench power — it does **not** need mains to click.
 
 ## Repo layout
 
@@ -78,8 +83,9 @@ update path. After that, use OTA.
 
 1. Wire a 3.3V USB-UART adapter: module **TX2/PA16 → adapter RX**,
    **RX2/PA15 → adapter TX**, **GND → GND**.
-2. Enter download mode: strap **PA0 → 3.3V**, then power-cycle (a full ~5 s
-   power-down with the strap held is the reliable way in).
+2. Enter download mode: tie **both PA0 and PA13 to 3.3V** (the `gpioa_0` and
+   `gpioa_13` test pads — straight to 3.3V, no resistor needed), then power-cycle.
+   A full ~5 s power-down with the straps held is the reliable way in.
 3. Flash with [ltchiptool](https://github.com/libretiny-eu/ltchiptool) — and
    **close any serial monitor first**, or it steals the bootloader's replies and
    the link times out:
