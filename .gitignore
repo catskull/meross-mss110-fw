@@ -1,0 +1,19 @@
+# PlatformIO build artifacts
+firmware/.pio/
+.pio/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# SENSITIVE — never commit.
+# A full flash dump of a real device contains its Wi-Fi credentials, the
+# factory UUID (which is the UART login password), and device keys.
+mss110_full.bin
+*_stock_backup.bin
+*full.bin
